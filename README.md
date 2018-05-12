@@ -5,6 +5,10 @@
 
 
 
+Screenshot and more info
+------------------------
+
+http://www.danielroggen.net/software_dscope.html
 
 History
 -------
@@ -47,10 +51,13 @@ V 1.00:	Initial release
 Dependencies
 ------------
 
+From version 1.08 onwards: no dependencies.
+
 Prior to version 1.08 (using Qt5) DScope required the qextserialport library, a serial port library for QT. 
 
-Versions previous to 1.06 relied on version 1.2win-alpha (http://sourceforge.net/projects/qextserialport/files/)
-Version 1.06 and onwards rely on the last code available at: http://code.google.com/p/qextserialport/
+Versions previous to 1.06 relied on version 1.2win-alpha (http://sourceforge.net/projects/qextserialport/files/).
+
+Version 1.06 and onwards rely on the last code available at: http://code.google.com/p/qextserialport/.
 
 Instructions:
 1. Download qextserialport from the tree: see http://code.google.com/p/qextserialport/source/checkout
