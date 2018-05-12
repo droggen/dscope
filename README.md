@@ -10,6 +10,37 @@ Screenshot and more info
 
 http://www.danielroggen.net/software_dscope.html
 
+Purpose
+-------
+DScope is a digital oscilloscope for text or binary data streaming over TCP, serial ports and Bluetooth RFCOMM. It offers flexible rendering and highly configurable binary streaming format or text streams. It consists of a main window with a variable number of scopes displaying the incoming signal traces.
+
+Signal data sources include TCP sources, serial ports (USB or hardware serial) and Bluetooth RFCOMM.
+Incoming data format include plain text format and binary streaming format. The binary streaming format is fully configurable, including header, number of channels, and channel data width.
+
+The aquired data can be exported to a file.
+
+The number of scopes, as well as the number of traces per scope is fully configurable.
+
+A typical usage example is the real-time display of data coming from sensors interfaced over a USB, TCP, or Bluetooth connection
+
+Key features
+------------
+
+* Serial (USB and hardware serial), Bluetooth RFCOMM and TCP connection
+* Text and binary data format
+* Real-time indication of incoming data speed
+* Fully configurable scopes, with multiple traces per scope, configurable X/Y scale, colors, etc.
+* Configurable display speed
+* Zoom (time and amplitude) and autoscale
+* Export signal data to file
+
+Binary files
+------------
+
+Windows: https://github.com/droggen/dscope/tree/master/release
+Android: https://play.google.com/store/apps/details?id=net.danielroggen.dscopeqt
+
+
 History
 -------
 
