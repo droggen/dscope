@@ -38,8 +38,15 @@ Binary files
 ------------
 
 Windows: https://github.com/droggen/dscope/tree/master/release
+
 Android: https://play.google.com/store/apps/details?id=net.danielroggen.dscopeqt
 
+Portability
+-----------
+DScope has been tested on Windows, Linux and Android. 
+Note that in Qt 5.10 Bluetooth is still not supported on Windows.
+
+The Android version is available from Google Play. 
 
 History
 -------
