@@ -1,0 +1,112 @@
+<h3 align="center">DScope</h3>
+
+<p>
+DScope is a digital oscilloscope for text or binary data streaming over TCP, serial ports and Bluetooth RFCOMM.
+It offers flexible rendering and highly configurable binary streaming format or text streams.
+</p>
+
+
+<h4>Data sources and visualization</h4>
+<p>
+Signal data sources include TCP/IP sources, serial ports (USB or hardware serial) and Bluetooth RFCOMM devices.
+The syntax to specify the data source is explained in the <a href=\"#display\">Input device</a> section below.
+</p>
+
+<p>
+The incoming data can be a plain text format and binary streaming formats.
+The syntax to specify the incoming data format is explained in the <a href=\"#formatbinary">Binary format</a> section below.
+When the binary format field is empty, plain text format is assumed. See the <a href=\"#formattext\">Text format</a> section below.
+</p>
+
+<p>
+By default one scope is used for each signal trace.
+However the number of scopes on display and the signals that they render can be freely configured, with e.g. several traces per scopes.
+This is explained in the <a href=\"#display\">Display format</a> section below.
+</p>
+
+
+<p>
+To preserve memory, incoming data are stored in a shift buffer: only the most recent N samples of data are kept for visualization.
+N is by default 10000.
+</p>
+
+
+<h4><a name=\"display\">Display format</a></h4>
+The way the signal traces are displayed are specified by a display format string.
+This string indicates how many scopes are on screen and which traces they should show.
+The syntax is: <i>&lt;title;traces[;xscale=xs][;yscale=auto|min max][;color=colors]&gt;&lt;......</i>
+<ul>
+<li>title: title of the scope</li>
+<li>traces: space separated list of traces to display (0=first trace, ...)</li>
+<li>xscale: horizontal scale. 1=default. Positive value: zoom in. Negative value: zoomout</li>
+<li>yscale: vertical scale. automatic (auto) or manual (min max)</li>
+<li>colors: space separated list of trace colors in hexadecimal format RRGGBB </li>
+</ul>
+For example the following display format string <i>&lt;Calibrated;5 6 7;xscale=1;yscale=-3300 3300 ;color=ff0000 ff00 ff&gt;&lt;Raw;2 3 4;xscale=-2;yscale=auto ;color=ff0000 ff00 ff&gt;</i>
+displays two scopes. The first shows traces number 5, 6 and 7, in red, green and blue respectively, with manual vertical scale, default horizontal scale, and the title Calibrated.
+
+<h4><a name=\"formattext\">Text format</a></h4>
+
+<p>
+Data is in plain text format, with one line per sample, and one column per channel.
+Columns can be delimited by one of the following separators: space, colon, semicolon, or tab.
+</p>
+<p>
+All channels must always be specified.
+In other words, there is no "empty" channel. If several separators follow each other without numbers in-between, they are ignored.
+Note that this differs from the CSV format which allows 'empty' fields.
+"Empty" channels can be specified by using "NaN" values. Currently, a NaN is interpreted as a zero.
+</p>
+
+
+<h4><a name=\"formatbinary">Binary format</a></h4>
+The format of the data source is either text or binary, and is described by a binary format string.
+An empty binary format string means that the incoming data is plain text. Each line represents one sample and data are separated by one of space, tabulation, colon or semicolon.
+Binary format consists of a HEADER followed by raw binary data.
+To specify the data format and header the following format string is used: <i>HEADER;C0FMT C1FMT C2FMT....[;checksum]</i>
+<ul>
+<li>HEADER: plain text header indicating start of data</li>
+<li>CxFMT: Format of the data channel x. The format is <i>[-]c|s|S|i|I|b<n>|B<n></i> where c,s|S,i|I,b|B indicate an 8-bit, 16-bit, 32-bit, or n-bit channel.
+s, i, b are little-endian. S, I and B are big-endian. The optional - prefix indicates a signed data channel.</li>
+<li>checksum: optional checksum. format is: x, f or F. f/F is a 16-bit Fletcher-16 checksum (little/big endian). x is an 8-bit longitudinal redundancy check.
+</li>
+</ul>
+<h4>Input device</h4>
+The input device can be a TCP/IP data source, a serial port (USB or hardware serial) or a Bluetooth RFCOMM device.
+It is specified as follows:
+<ul>
+<li>TCP/IP: <i>tcp:host:port</i></li>
+<li>Serial: <i>ser:device:baudrate</i></li>
+<li>Bluetooth: <i>bt:macaddress</i></li>
+</ul>
+Serial device has the format COMx under Windows or /dev/ttyxxxx under Linux.
+The MAC address of a Bluetooth device is a 12 hex digit string, without the colon separator.
+
+<h4>User interface</h4>
+
+Scopes can be selected, scaled, and enlarged by using the mouse.
+
+<ul>
+<li>Left click: select a scope</li>
+<li>Right click: enlarges the selected scope</li>
+<li>Wheel up/down: vertical zoom.</li>
+<li>Middle click: automatic vertical scale</li>
+<li>Shift+wheel up/down: horizontal zoom.</li>
+<li>Shift+middle click: default horizontal scale</li>
+</ul>
+
+Scope traces can be saved to file (Save data button). Use the clear data button to clear the scope traces.
+
+
+<h4>Command line</h4>
+Command line parameters are: <i>-c -f file</i>.<br>
+-f specifies a configuration file to load on startup. -c automatically connects to the device (typically used with -c).
+
+
+<h4>History</h4>
+<ul>
+<li>1.10: Added Bluetooth RFCOMM; added terminal view; revamped the UI for mobile devices.</li>
+<li>1.09: Added ability to send one liners to remote device.</li>
+<li>1.08: converted to Qt5; fixed reception of data in text mode (previously the case where partial lines were received by readAll was not handled, leading to possible changes in number of channels at runtime).</li>
+</ul>
+

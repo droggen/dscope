@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>howto.html</file>
+        <file>sine64.png</file>
+    </qresource>
+</RCC>

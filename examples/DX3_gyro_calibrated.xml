@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration DisplayFormat="&lt;X axis; 5;yscale=-2000 2000&gt;&lt;Y axis;6;yscale=-2000 2000&gt;&lt;Z axis;7;yscale=-2000 2000&gt;&lt;X Gyro;8;yscale=0 1000&gt;&lt;X 45 Gyro;9;yscale=0 1000&gt;&lt;Y Gyro;10;yscale=0 1000&gt;&lt;Y 45 Gyro;11;yscale=0 1000&gt;" BinaryFormat="DX5;cc-s-s-s-s-s-s-s-s-s-s-s" InputDevice="ser:com9:38400"></Configuration>
