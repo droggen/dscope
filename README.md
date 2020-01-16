@@ -51,6 +51,8 @@ The Android version is available from Google Play.
 History
 -------
 
+v 1.11: Support for binary frame format without header (e.g. ";c" to indicate no header, one 8-bit channel, no checksum).
+
 v 1.10: Added Bluetooth RFCOMM; added terminal view; revamped the UI for mobile devices.
 
 v 1.09: Added ability to send one liners to remote device.

@@ -52,7 +52,8 @@ int ConsoleInit(void)
     //redirects std output to console buffer, so that printf works
     //freopen( "CON", "w", stdout );  //redirects stdout to console, but
     //doesn"t work after SetConsoleActiveScreenBuffer issued
-   freopen("CONOUT$", "wta", stdout);
+   //freopen("CONOUT$", "wta", stdout);
+    freopen("CONOUT$", "wt", stdout);
     //freopen("CONOUT$", "wta+", stdout);
 
     //Also let us read from console with c library, since I can"t get
@@ -60,7 +61,7 @@ int ConsoleInit(void)
     freopen("CONIN$","r",stdin);
 
     //set console title
-    char *title="Console";
+    const char *title="Console";
 #ifdef UNICODE
      // Convert to a wchar_t*
     size_t origsize = strlen(title) + 1;

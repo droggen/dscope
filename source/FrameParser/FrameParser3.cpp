@@ -65,7 +65,7 @@ void FrameParser3::Status()
 	printf("ok: %d\n",(int)ok);
 	printf("Channel: %d\n",channel);
 	printf("Framesize: %d\n",framesize);
-	printf("Header: %s\n",header.c_str());
+    printf("Header: '%s'\n",header.c_str());
    printf("Sign:         ");
 	for(int i=0;i<sign.size();i++)
       printf("%c ",sign[i]?'s':'u');
@@ -123,6 +123,7 @@ std::vector<std::vector<int> > FrameParser3::Parser(const char *data,int n)
 	
 		if(strncmp(framedata,header.data(),header.size()) == 0)
 		{
+            //printf("match\n");
          // Found a frame, get pointer to data
          unsigned char *dataptr = (unsigned char*)framedata+header.size();
 
@@ -207,8 +208,12 @@ int FrameParser3::FrameParser_AnalyzeFormat(int &channel,int &framesize,std::str
 
    // Find frame header length
 	size_t t = format.find_first_of(';');
-	if(t==std::string::npos || t==0)
-		return FRAMEPARSER_ERROR_FORMAT;
+    if(t==std::string::npos)
+        return FRAMEPARSER_ERROR_FORMAT;
+    if(t==0)
+    {
+        //printf("No header - match always\n");
+    }
 
 
    // Look for the separator for the checksum (optional)

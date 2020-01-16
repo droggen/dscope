@@ -1,4 +1,5 @@
 #include "dlinereader.h"
+#include <algorithm>
 
 DLineReader::DLineReader()
 {
