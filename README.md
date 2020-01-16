@@ -1,6 +1,6 @@
    DScope Application
 
-   Copyright (C) 2008-2017:
+   Copyright (C) 2008-2020:
          Daniel Roggen, droggen@gmail.com
 
 
