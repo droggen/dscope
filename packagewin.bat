@@ -8,11 +8,13 @@ rd /q /s windows
 del /q dscopeqt-win.zip
 md windows
 rem %1\windeployqt.exe build-dscopeqt-Desktop_Qt_5_8_0_MinGW_32bit-Release\release\DScopeQT.exe --dir windows --force
-%1\windeployqt.exe build-dscopeqt-Desktop_Qt_5_12_6_MinGW_64_bit-Release\release\DScopeQT.exe --dir windows --force
+rem %1\windeployqt.exe build-dscopeqt-Desktop_Qt_5_12_6_MinGW_64_bit-Release\release\DScopeQT.exe --dir windows --force
+%1\windeployqt.exe build-dscopeqt-Desktop_Qt_5_14_2_MSVC2017_64bit-Release\release\DScopeQT.exe --dir windows --force
 
 echo Copy binary
 
-copy build-dscopeqt-Desktop_Qt_5_12_6_MinGW_64_bit-Release\release\DScopeQT.exe windows
+rem copy build-dscopeqt-Desktop_Qt_5_12_6_MinGW_64_bit-Release\release\DScopeQT.exe windows
+copy build-dscopeqt-Desktop_Qt_5_14_2_MSVC2017_64bit-Release\release\DScopeQT.exe windows
 
 echo Copy additional dlls
 
