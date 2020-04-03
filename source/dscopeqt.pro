@@ -71,7 +71,7 @@ win32: RC_FILE = dscope.rc
 
 
 # Developer mode
-#DEFINES += DEVELMODE
+//DEFINES += DEVELMODE
 
 DISTFILES += \
     android-source/AndroidManifest.xml \

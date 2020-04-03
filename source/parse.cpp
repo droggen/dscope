@@ -76,7 +76,7 @@ bool ParseConnection(QString str, ConnectionData &conn)
             conn.message="Invalid BT address. The BT address is a 12-digit hex string, without spaces, dashes or colons";
             return false;
         }
-        conn.type=DevBTConnected;
+        conn.type=DevBTConnection;
         return true;
     }
     // Process serial
@@ -133,7 +133,7 @@ bool ParseConnection(QString str, ConnectionData &conn)
            default:
               conn.baud=QSerialPort::Baud115200;
         }
-        conn.type=DevSerialConnected;
+        conn.type=DevSerialConnection;
         return true;
     }
     // Process serial
@@ -164,7 +164,7 @@ bool ParseConnection(QString str, ConnectionData &conn)
             return false;
         }
         conn.tcpport=port;
-        conn.type=DevTCPConnected;
+        conn.type=DevTCPConnection;
         return true;
     }
 

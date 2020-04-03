@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __IODEV_H
 #define __IODEV_H
 
-#include <QtWidgets>
 #include <QObject>
 #include <QBluetoothAddress>
 #include <QSerialPort>
@@ -34,7 +33,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <QTcpSocket>
 #include <QBluetoothSocket>
 
-typedef enum __connect_t {DevNotConnected,DevTCPConnected,DevSerialConnected,DevBTConnected} connect_t ;
+
+// Whether to use a member or pointer. Pointer seems to avoid a crash after closing/opening
+#define BTPOINTER 1
+
+typedef enum __connect_t {DevNotConnected,DevTCPConnection,DevSerialConnection,DevBTConnection} connect_t ;
 
 typedef struct __ConnectionData
 {
@@ -56,20 +59,28 @@ typedef struct __ConnectionData
 
 
 
-class IoDevice : public QWidget
+class IoDevice : public QObject
 {
     Q_OBJECT
 
 private:
-    connect_t connectstate;
+    ConnectionData connectiondata;
 
-    QSerialPort *deviceSER;
+    QSerialPort deviceSER;
     QTcpSocket deviceTCP;
+#if BTPOINTER==0
     QBluetoothSocket deviceBT;
+#else
+    QBluetoothSocket *deviceBT;
+#endif
 
 
 public:
-    explicit IoDevice(QWidget *parent = 0);
+    explicit IoDevice(QObject *parent = nullptr);
+
+    static bool ParseConnection(QString str, ConnectionData &conn);
+    static QString ConnectionToString(const ConnectionData &conn);
+    static QString BTStateToString(QBluetoothSocket::SocketState state);
 
     bool open(ConnectionData cd);
     bool close(void);
@@ -81,17 +92,22 @@ signals:
     void readyRead(QByteArray b);
     void connected();
     void disconnected();
+    void error(QString errmsg);
+    void connectionError();
 
 private slots:
-    void gotTCPData();
-    void gotBTData();
-    void gotSERData();
+    void BTGotData();
     void BTConnected();
     void BTDisconnected();
     void BTError(QBluetoothSocket::SocketError);
+
+    void SERGotData();
+    void SERError(QSerialPort::SerialPortError err);
+
+    void TCPGotData();
     void TCPConnected();
     void TCPDisconnected();
-    void errTCP(QAbstractSocket::SocketError);
+    void TCPErr(QAbstractSocket::SocketError);
 
 };
 

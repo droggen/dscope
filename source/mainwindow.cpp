@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QScreen>
+#include <QScrollBar>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -75,6 +76,10 @@ MainWindow::MainWindow(QWidget *parent) :
     buffersize=100000;
     ui->uiBufferSize->setValue(buffersize);
 
+    // Scaling
+    scaling_a=1.0;
+    scaling_b=0.0;
+    scaling_enabled=false;
 
     // Initialize the scopes
     dscopes = new DScopesQTWidget(0,0,640,480,false);
@@ -88,10 +93,19 @@ MainWindow::MainWindow(QWidget *parent) :
     printf("Row height %d\n",RowHeight);
     ui->uiteDisplayFormat->setFixedHeight(3*RowHeight) ;
 
+    // Set validators for the scaling option
+    //ui->uile_scaling_a->setValidator(new QDoubleValidator(0, 100, 2, this))
+    //ui->uile_scaling_a->setValidator(new QRegExpValidator(QRegExp("[0-9]*"), this);
+    ui->uile_scaling_a->setValidator(new QRegExpValidator(QRegExp("[0123456789.-]*"), this));
+    ui->uile_scaling_b->setValidator(new QRegExpValidator(QRegExp("[0123456789.-]*"), this));
+
+
     // Connect the device
     connect(&iodev,SIGNAL(readyRead(QByteArray)),this,SLOT(iodevread(QByteArray)));
     connect(&iodev,SIGNAL(connected()),this,SLOT(ioconnected()));
     connect(&iodev,SIGNAL(disconnected()),this,SLOT(iodisconnected()));
+    connect(&iodev,SIGNAL(error(QString)),this,SLOT(ioerror(QString)));
+    connect(&iodev,SIGNAL(connectionError()),this,SLOT(ioconnectionerror()));
 
     binary=false;		// Text mode by default
 
@@ -279,7 +293,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
 
 void MainWindow::on_uipbConnect_clicked()
 {
-    printf("iodev %d\n",iodev.isConnected());
+    printf("Pushbutton connection: iodev %d\n",iodev.isConnected());
     // Disconnection
     if(iodev.isConnected())
     {
@@ -288,6 +302,7 @@ void MainWindow::on_uipbConnect_clicked()
         iodev.close();
         return;
     }
+
     // Connection
     ConnectionData conn;
     bool ok=ParseConnection(ui->uileHostPort->text(),conn);
@@ -296,22 +311,14 @@ void MainWindow::on_uipbConnect_clicked()
         QMessageBox::critical(this, "Device specification error",conn.message);
         return;
     }
-    printf("going to open conn\n");
-    ok=iodev.open(conn);
-    if(ok)
-    {
-        printf("Connection request successful\n");
-        // Update the UI
-        ui->uipbConnect->setText("Connecting...");
-        ui->uipbConnect->setEnabled(false);
-        time_received_last=PreciseTimer::QueryTimer();
-    }
-    else
-    {
-        // In that case
-        printf("Connection failed\n");
-    }
+    printf("Opening connection\n");
 
+
+    // Transition the UI to wait for connection
+    UiWaitConnect();
+    // Attempt connection
+    // The answer of the connection is going to be in a signal: either connection error (ioconnectionerror), or success (ioconnected).
+    iodev.open(conn);
 
 }
 void MainWindow::aboutToClose()
@@ -386,7 +393,7 @@ void MainWindow::receivedData(vector<int> &linedata,std::vector<bool> &linedatan
    // Check for sensor changes
    if(oldsize!=newsize)
    {
-      printf("Changing from %d to %d\n",oldsize,newsize);
+      printf("Changing number of channels from %d to %d\n",oldsize,newsize);
 
       // Resize the data vector according to the new number of sensors
       // Since we cannot identify sensors we should in principle erase all past data to avoid confusion - we don't.
@@ -414,7 +421,7 @@ void MainWindow::receivedData(vector<int> &linedata,std::vector<bool> &linedatan
       // Erase old data
       alldata[i].erase(alldata[i].begin());
       // Store new data
-      alldata[i].push_back(linedata[i]);
+      alldata[i].push_back(scale(linedata[i]));
    }
    /*if(PreciseTimer::QueryTimer()-lastplot>refresh)
    {
@@ -425,6 +432,17 @@ void MainWindow::receivedData(vector<int> &linedata,std::vector<bool> &linedatan
    }*/
 
    totreceiveddata++;
+}
+
+int MainWindow::scale(int data)
+{
+    if(!scaling_enabled)
+        return data;
+
+    // Do double computation and return as int
+    double d = data;
+    d = d*scaling_a + scaling_b;
+    return (int)d;
 }
 
 
@@ -568,6 +586,49 @@ void MainWindow::ioconnected()
 {
     printf("MainWindow::ioconnected\n");
 
+    UiToConnected();
+
+}
+void MainWindow::iodisconnected()
+{
+    printf("MainWindow::iodisconnected\n");
+    //QMessageBox::critical(this, "Error", "Disconnected");
+    UiToIdle();
+}
+void MainWindow::ioerror(QString err)
+{
+    printf("MainWindow::ioerror: '%s'\n",err.toStdString().c_str());
+    QMessageBox::critical(this, "Error", QString("I/O error: %1").arg(err));
+    //iodev.close();
+    //UiToIdle();
+}
+void MainWindow::ioconnectionerror()
+{
+    QMessageBox::critical(this, "Error", "Connection error");
+    //iodev.close();
+    UiToIdle();
+}
+
+void MainWindow::UiToIdle()
+{
+    printf("Ui to idle\n");
+
+    ui->uipbConnect->setEnabled(true);
+    ui->uipbConnect->setText("&Connect");
+    // Move to the connect window
+    ui->stackedWidget->setCurrentIndex(0);
+    // Move the UI
+    ui->verticalLayoutConfigtab->insertWidget(0,ui->frame_Settings);
+    ui->verticalLayoutMain->insertWidget(0,ui->frame_Settings);
+}
+void MainWindow::UiWaitConnect()
+{
+    ui->uipbConnect->setText("Connecting...");
+    ui->uipbConnect->setEnabled(false);
+    time_received_last=PreciseTimer::QueryTimer();
+}
+void MainWindow::UiToConnected()
+{
     ui->uipbConnect->setEnabled(true);
     ui->uipbConnect->setText("Dis&connect");
     // Move to the scope window
@@ -575,28 +636,9 @@ void MainWindow::ioconnected()
     ui->tabWidget->setCurrentIndex(0);
 
     // Move the UI
-    //ui->stackedWidget->widget(0)->layout()->removeWidget(ui->frame_Settings);
     ui->verticalLayoutMain->removeWidget(ui->frame_Settings);
-    //ui->tabWidget->widget(0)->layout()->addWidget(ui->frame_Settings);
-    //ui->tabWidget->widget(1)->layout()->addWidget(ui->frame_Settings);
-    //ui->tabWidget->widget(1)->layout()->addWidget(ui->frame_Settings);
     ui->verticalLayoutConfigtab->insertWidget(0,ui->frame_Settings);
 }
-void MainWindow::iodisconnected()
-{
-    printf("MainWindow::iodisconnected\n");
-    ui->uipbConnect->setEnabled(true);
-    ui->uipbConnect->setText("&Connect");
-    // Move to the connect window
-    ui->stackedWidget->setCurrentIndex(0);
-
-    // Move the UI
-    ui->tabWidget->widget(1)->layout()->removeWidget(ui->frame_Settings);
-    //ui->stackedWidget->widget(0)->layout()->addWidget(ui->frame_Settings);
-    ui->verticalLayoutMain->insertWidget(0,ui->frame_Settings);
-
-}
-
 void MainWindow::TextChunckDecodeRead(const QByteArray& in)
 {
     unsigned it=0;
@@ -741,6 +783,17 @@ bool MainWindow::loadSettings(QString fileName)
     int ag = settings->value("AfterGlow",0).toInt();
     int rr = settings->value("RefreshRate",10).toInt();
 
+    // Load scaling settings
+    scaling_a = settings->value("ScalingA",1.0).toDouble();
+    scaling_b = settings->value("ScalingB",0.0).toDouble();
+    scaling_enabled = settings->value("ScalingEnabled",false).toBool();
+    // Reflect UI scaling settings
+    ui->uile_scaling_a->setText(QString::number(scaling_a,'f'));
+    ui->uile_scaling_b->setText(QString::number(scaling_b,'f'));
+    ui->uicb_scaling->setCheckState(scaling_enabled ? Qt::Checked:Qt::Unchecked);
+
+
+
     ui->uiAfterGlow->setCheckState(ag?Qt::Checked:Qt::Unchecked);
 
     if(rr<ui->uiRefreshRate->minimum()) rr=ui->uiRefreshRate->minimum();
@@ -799,6 +852,9 @@ bool MainWindow::saveSettings(QString ini)
     settings->setValue("NanValue",nanvalue);
     settings->setValue("RefreshRate",ui->uiRefreshRate->value());
     settings->setValue("AfterGlow",ui->uiAfterGlow->isChecked()?1:0);
+    settings->setValue("ScalingA",scaling_a);
+    settings->setValue("ScalingB",scaling_b);
+    settings->setValue("ScalingEnabled",scaling_enabled);
     delete settings;
     return false;
 }
@@ -808,7 +864,7 @@ void MainWindow::on_actionAbout_triggered()
 {
    QMessageBox::about(this, "About",
    "<p><b>DScope</b> - QT Version</p>\n"
-   "<p>Version 1.11</p>"
+   "<p>Version 1.12</p>"
    "<p>(c) 2007-2020 Daniel Roggen</p>");
 
 }
@@ -974,7 +1030,6 @@ void MainWindow::selectBt()
 
 void MainWindow::on_pushButton_4_clicked()
 {
-    // Disconnect
     // Disconnection
     if(iodev.isConnected())
     {
@@ -1007,4 +1062,49 @@ void MainWindow::on_uirbScale2_clicked()
 void MainWindow::on_uirbScale4_clicked()
 {
     dscopes->setScale(4);
+}
+
+void MainWindow::on_uicb_scaling_stateChanged(int state)
+{
+    // Get the parameters
+    QString sa = ui->uile_scaling_a->text().trimmed();
+    QString sb = ui->uile_scaling_b->text().trimmed();
+    // Conver to double and check ok
+    bool ok1,ok2;
+    double a=sa.toDouble(&ok1);
+    double b=sb.toDouble(&ok2);
+    printf("To double: %lf %lf. ok: %d %d\n",a,b,ok1,ok2);
+    if(ok1==false || ok2==false)
+    {
+        QMessageBox::critical(this, "Scaling", "Invalid scaling factors");
+        // Deactivate the scaling
+        ui->uicb_scaling->setChecked(false);
+        return;
+    }
+
+    scaling_a=a;
+    scaling_b=b;
+    if(state==Qt::Checked && ok1==true && ok2==true)
+    {
+        scaling_enabled=true;
+    }
+    else
+    {
+        printf("Disable scaling\n");
+        scaling_enabled=false;
+    }
+
+}
+
+void MainWindow::on_uile_scaling_a_textEdited(const QString &arg1)
+{
+    //
+    on_uicb_scaling_stateChanged(ui->uicb_scaling->checkState());
+
+}
+
+void MainWindow::on_uile_scaling_b_textEdited(const QString &arg1)
+{
+    //
+    on_uicb_scaling_stateChanged(ui->uicb_scaling->checkState());
 }

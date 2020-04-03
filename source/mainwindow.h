@@ -88,6 +88,10 @@ private:
 
     double time_displayed_last,time_displayed_delta;
 
+    // Scaling options
+    double scaling_a,scaling_b;
+    bool scaling_enabled;
+
     void Plot();
     void receivedData(vector<int> &linedata,std::vector<bool> &linedatanan);
     void receivedQuat(vector<float> &linedataf);
@@ -98,6 +102,8 @@ private:
    vector<vector<int> > alldata;
    ScopesDefinition sd;
    vector<unsigned> handles;
+
+   int scale(int data);
 
    void BinaryChunckDecodeRead(QByteArray &ba);
     void TextChunckDecodeRead(const QByteArray& in);
@@ -138,9 +144,16 @@ private slots:
    void iodevread(QByteArray ba);
    void ioconnected();
    void iodisconnected();
+   void ioerror(QString err);
+   void ioconnectionerror();
    //void displayError(QAbstractSocket::SocketError);
    void dsrChanged(bool);
    void aboutToClose();
+
+   // Change UI presentation
+   void UiToIdle();
+   void UiWaitConnect();
+   void UiToConnected();
 
    void on_uipbSend_clicked();
    void on_actionList_Bluetooth_devices_triggered();
@@ -153,6 +166,9 @@ private slots:
    void on_uirbScale1_clicked();
    void on_uirbScale2_clicked();
    void on_uirbScale4_clicked();
+   void on_uicb_scaling_stateChanged(int arg1);
+   void on_uile_scaling_a_textEdited(const QString &arg1);
+   void on_uile_scaling_b_textEdited(const QString &arg1);
 };
 
 #endif // __MAINWINDOW_H
