@@ -11,6 +11,8 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android-source
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += c++11
+
 
 INCLUDEPATH += .
 TARGET = DScopeQT
@@ -71,15 +73,25 @@ win32: RC_FILE = dscope.rc
 
 
 # Developer mode
-//DEFINES += DEVELMODE
+#DEFINES += DEVELMODE
+
+
+
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
+
+#DISTFILES += \
+#   android-source/AndroidManifest.xml \
+#   android-source/gradle/wrapper/gradle-wrapper.jar \
+#   android-source/gradlew \
+#   android-source/res/values/libs.xml \
+#   android-source/build.gradle \
+#   android-source/gradle/wrapper/gradle-wrapper.properties \
+#   android-source/gradlew.bat
 
 DISTFILES += \
-    android-source/AndroidManifest.xml \
-    android-source/gradle/wrapper/gradle-wrapper.jar \
-    android-source/gradlew \
-    android-source/res/values/libs.xml \
-    android-source/build.gradle \
-    android-source/gradle/wrapper/gradle-wrapper.properties \
-    android-source/gradlew.bat
-
+   android-source/AndroidManifest.xml \
+   android-source/res/values/libs.xml
 

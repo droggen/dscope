@@ -19,9 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 
+#include <QtGlobal>
+#ifndef Q_OS_ANDROID
 #include <stdio.h>
-//#include <unistd.h>
 #include <stdlib.h>
+#endif
+//#include <unistd.h>
+
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
@@ -31,22 +35,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 FrameParser3::FrameParser3(std::string _format)
 {
-	// Assign the string
-	format=_format;
-	
-	// Check if the format is valid and get the number of channels and buffer length
+    // Assign the string
+    format=_format;
+
+    // Check if the format is valid and get the number of channels and buffer length
    int r= FrameParser_AnalyzeFormat(channel,framesize,header,sign,littleendian,bitpc,bitpos);
-	if(r==FRAMEPARSER_NOERROR)
-	{
-		ok=true;
-		frame.resize(framesize,0);
-	}
-	else
-	{
-		ok=false;
-	}
-	
-	Status();
+    if(r==FRAMEPARSER_NOERROR)
+    {
+        ok=true;
+        frame.resize(framesize,0);
+    }
+    else
+    {
+        ok=false;
+    }
+
+    Status();
 }
 FrameParser3::~FrameParser3()
 {
@@ -57,23 +61,26 @@ void FrameParser3::Status()
 {
    if(!ok)
    {
+#ifndef Q_OS_ANDROID
       printf("Invalid format string\n");
+#endif
       return;
    }
+#ifndef Q_OS_ANDROID
    printf("FrameParser: Channel configuration\n");
    printf("----------------------------------\n");
-	printf("ok: %d\n",(int)ok);
-	printf("Channel: %d\n",channel);
-	printf("Framesize: %d\n",framesize);
+    printf("ok: %d\n",(int)ok);
+    printf("Channel: %d\n",channel);
+    printf("Framesize: %d\n",framesize);
     printf("Header: '%s'\n",header.c_str());
    printf("Sign:         ");
-	for(int i=0;i<sign.size();i++)
+    for(int i=0;i<sign.size();i++)
       printf("%c ",sign[i]?'s':'u');
-	printf("\n");
-	printf("LittleEndian: ");
-	for(int i=0;i<littleendian.size();i++)
+    printf("\n");
+    printf("LittleEndian: ");
+    for(int i=0;i<littleendian.size();i++)
       printf("%c ",littleendian[i]?'y':'n');
-	printf("\n");
+    printf("\n");
    printf("Bitpc: ");
    for(int i=0;i<bitpc.size();i++)
       printf("%d ",(int)bitpc[i]);
@@ -100,29 +107,30 @@ void FrameParser3::Status()
       printf("   Checksum endianness: %s\n",checksumlittle?"Little":"Big");
       printf("   Checksum bit position: %d\n",checksumbitpos);
    }
+#endif
 }
 /*
-	Parse the data up to n bytes and decode frames as they are found.
-	Returns the number of frames decoded.
+    Parse the data up to n bytes and decode frames as they are found.
+    Returns the number of frames decoded.
 */
 std::vector<std::vector<int> > FrameParser3::Parser(const char *data,int n)
 {
-	unsigned int dataunsigned;
-	std::vector<std::vector<int> > v;
-	std::vector<int> channels(channel,0);	
-	if(!ok)
-		return v;
-	
+    unsigned int dataunsigned;
+    std::vector<std::vector<int> > v;
+    std::vector<int> channels(channel,0);
+    if(!ok)
+        return v;
 
-	for(int i=0;i<n;i++)
-	{
-		// Feed in a byte.
-		char *framedata = (char*)frame.data();
-		memmove(framedata,framedata+1,framesize-1);
-		framedata[framesize-1]=data[i];
-	
-		if(strncmp(framedata,header.data(),header.size()) == 0)
-		{
+
+    for(int i=0;i<n;i++)
+    {
+        // Feed in a byte.
+        char *framedata = (char*)frame.data();
+        memmove(framedata,framedata+1,framesize-1);
+        framedata[framesize-1]=data[i];
+
+        if(strncmp(framedata,header.data(),header.size()) == 0)
+        {
             //printf("match\n");
          // Found a frame, get pointer to data
          unsigned char *dataptr = (unsigned char*)framedata+header.size();
@@ -161,8 +169,8 @@ std::vector<std::vector<int> > FrameParser3::Parser(const char *data,int n)
 
 
          // Decode all the channels
-			for(int c=0;c<channel;c++)
-			{
+            for(int c=0;c<channel;c++)
+            {
             // Get the value
             if(littleendian[c])
                dataunsigned = getbits_little(dataptr,bitpos[c],bitpc[c]);
@@ -182,32 +190,32 @@ std::vector<std::vector<int> > FrameParser3::Parser(const char *data,int n)
                   dataunsigned |= signext;
                }
             }
-				channels[c]=dataunsigned;
-			} // for channel
-			v.push_back(channels);
-		} // if header
+                channels[c]=dataunsigned;
+            } // for channel
+            v.push_back(channels);
+        } // if header
 
-	} // for input data 
-	return v;
+    } // for input data
+    return v;
 }
 
 bool FrameParser3::IsValid()
 {
-	return ok;
+    return ok;
 }
 
 int FrameParser3::FrameParser_AnalyzeFormat(int &channel,int &framesize,std::string &header,std::vector<bool> &sign,std::vector<bool> &littleendian,std::vector<int> &bitpc,std::vector<int> &bitpos)
 {
-	unsigned frameheaderlen;
-	char type;
-	unsigned formatptr;
+    unsigned frameheaderlen;
+    char type;
+    unsigned formatptr;
    unsigned bitptr=0;
 
 
 
 
    // Find frame header length
-	size_t t = format.find_first_of(';');
+    size_t t = format.find_first_of(';');
     if(t==std::string::npos)
         return FRAMEPARSER_ERROR_FORMAT;
     if(t==0)
@@ -251,35 +259,35 @@ int FrameParser3::FrameParser_AnalyzeFormat(int &channel,int &framesize,std::str
       }
 
    }
-	
-	// keep the header
-	header=format.substr(0,t);
-	
-	frameheaderlen=t;
 
-	// Decode the format string
-	formatptr=frameheaderlen+1;
-	channel=0;
+    // keep the header
+    header=format.substr(0,t);
+
+    frameheaderlen=t;
+
+    // Decode the format string
+    formatptr=frameheaderlen+1;
+    channel=0;
    framesizebits += frameheaderlen*8;
-	while(1)
-	{
-		// Get next data type
+    while(1)
+    {
+        // Get next data type
       type = format[formatptr++];
       if(type==0 || type==';')      // Last item processed, defined by end of string or ; separator -> return.
          break;
-		if(type=='-')
-		{
-			sign.push_back(true);
-			// Signed element. We have to read the data type.
+        if(type=='-')
+        {
+            sign.push_back(true);
+            // Signed element. We have to read the data type.
          type=format[formatptr++];
-			if(type==0)
-			{
-				assert(0);
-				return FRAMEPARSER_ERROR_FORMAT;		// Error: we have a sign, but no type specifier -> crash.
-			}
-		}
-		else
-			sign.push_back(false);
+            if(type==0)
+            {
+                assert(0);
+                return FRAMEPARSER_ERROR_FORMAT;		// Error: we have a sign, but no type specifier -> crash.
+            }
+        }
+        else
+            sign.push_back(false);
 
 
       bitpos.push_back(bitptr);
@@ -336,7 +344,7 @@ int FrameParser3::FrameParser_AnalyzeFormat(int &channel,int &framesize,std::str
       bitptr += *(bitpc.end()-1);
       //formatptr++;
       channel++;
-	}	// do
+    }	// do
 
    // Define location of checksum,
    checksumbitpos=(bitptr/8)*8;
@@ -351,7 +359,7 @@ int FrameParser3::FrameParser_AnalyzeFormat(int &channel,int &framesize,std::str
 
 
 
-	return FRAMEPARSER_NOERROR;
+    return FRAMEPARSER_NOERROR;
 }
 
 

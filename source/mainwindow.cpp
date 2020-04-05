@@ -66,6 +66,8 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
 
+   timer=0;
+
     totreceiveddata=0;
 
     // Set the NaN replacement value
@@ -80,6 +82,9 @@ MainWindow::MainWindow(QWidget *parent) :
     scaling_a=1.0;
     scaling_b=0.0;
     scaling_enabled=false;
+
+
+
 
     // Initialize the scopes
     dscopes = new DScopesQTWidget(0,0,640,480,false);
@@ -116,6 +121,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->uileHostPort->setText(QString("bt:00066686835E"));
 
 
+
+
     pt=0;
     lastplot=0;
 
@@ -133,6 +140,7 @@ MainWindow::MainWindow(QWidget *parent) :
     statusBar()->addWidget(displayrateLabel);
 
     time_received_delta_vector.resize(100,0.0);
+
 
 
 
@@ -174,7 +182,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->stackedWidget->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
 
-
+#if 1
     // Load specific settings from command line, if specified
     QStringList arg = qApp->arguments();
     if(arg.contains("-f"))
@@ -193,6 +201,7 @@ MainWindow::MainWindow(QWidget *parent) :
     {
       on_uipbConnect_clicked();
     }
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -456,7 +465,13 @@ int MainWindow::scale(int data)
 
 void MainWindow::on_uiRefreshRate_valueChanged(int i)
 {
-   killTimer(timer);
+    qDebug("on_uiRefreshRate_valueChanged: timer: %d",timer);
+    if(timer)
+    {
+        killTimer(timer);
+        timer=0;
+    }
+   qDebug("on_uiRefreshRate_valueChanged: after kill");
    timer=startTimer(1000/i);
    refresh=1.0/(double)i;
 }
@@ -762,6 +777,10 @@ void MainWindow::on_actionLoadConfiguration_triggered()
   loadSettings
 *******************************************************************************
 Load the app configuration from QSettings.
+
+Return value:
+    false   ok
+    true    error
 ******************************************************************************/
 bool MainWindow::loadSettings(QString fileName)
 {
@@ -821,6 +840,7 @@ bool MainWindow::loadSettings(QString fileName)
 
    applyDisplaySettings();
    applyFormatSettings();
+   return false;
 }
 /******************************************************************************
   saveSettings
@@ -890,10 +910,6 @@ void MainWindow::on_actionHowto_triggered()
    dialog.exec();
 }
 
-void MainWindow::on_pushButton_ClearData_clicked()
-{
-    clearDataClicked();
-}
 
 void MainWindow::on_actionSave_data_triggered()
 {
@@ -902,11 +918,6 @@ void MainWindow::on_actionSave_data_triggered()
 void MainWindow::on_actionClear_data_triggered()
 {
     clearDataClicked();
-}
-
-void MainWindow::on_pushButton_SaveData_clicked()
-{
-    saveDataClicked();
 }
 
 void MainWindow::saveDataClicked()
@@ -1108,3 +1119,4 @@ void MainWindow::on_uile_scaling_b_textEdited(const QString &arg1)
     //
     on_uicb_scaling_stateChanged(ui->uicb_scaling->checkState());
 }
+

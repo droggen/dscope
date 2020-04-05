@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>412</width>
+    <height>592</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>DScope QT</string>
   </property>
@@ -150,7 +158,7 @@
              <item>
               <widget class="QCheckBox" name="uicb_scaling">
                <property name="text">
-                <string>Enable linear scaling of input data: yd = a*y+b</string>
+                <string>Input data scaling: yd = a*y+b</string>
                </property>
               </widget>
              </item>
@@ -328,7 +336,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">

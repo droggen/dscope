@@ -133,8 +133,6 @@ private slots:
     void on_actionSaveConfiguration_triggered();
     void on_actionLoadConfiguration_triggered();
     void on_uipbConnect_clicked();
-    void on_pushButton_ClearData_clicked();
-    void on_pushButton_SaveData_clicked();
     void on_uiAfterGlow_stateChanged(int state);
     void on_uiRefreshRate_valueChanged(int i);
     void on_uiNanValue_valueChanged(int i);
