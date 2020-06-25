@@ -884,7 +884,7 @@ void MainWindow::on_actionAbout_triggered()
 {
    QMessageBox::about(this, "About",
    "<p><b>DScope</b> - QT Version</p>\n"
-   "<p>Version 1.12</p>"
+   "<p>Version 1.13</p>"
    "<p>(c) 2007-2020 Daniel Roggen</p>");
 
 }

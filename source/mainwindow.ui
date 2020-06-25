@@ -28,7 +28,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -373,8 +373,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>203</width>
-                 <height>201</height>
+                 <width>352</width>
+                 <height>388</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -564,7 +564,7 @@
                <bool>true</bool>
               </property>
               <property name="textInteractionFlags">
-               <set>Qt::NoTextInteraction</set>
+               <set>Qt::TextSelectableByMouse</set>
               </property>
              </widget>
             </item>
