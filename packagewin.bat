@@ -36,4 +36,4 @@ echo Packaging done
 exit /b
 
 :HAVE_0
-echo Specify the path to qt. Example: %0 C:\Qt\5.8\mingw53_32\bin
+echo Specify the path to qt. Example: %0 c:qt\5.15.0\msvc2019_64\bin

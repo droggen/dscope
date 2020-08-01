@@ -14,6 +14,8 @@ public:
     void addBytes(const QByteArray &ba);
     QString getText();
 
+    void clear();
+
 private:
     unsigned maxlines;
     DLineReader linereader;

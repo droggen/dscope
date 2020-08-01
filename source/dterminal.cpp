@@ -53,6 +53,9 @@ void DTerminal::trimOld()
     }
 
 }
-
+void DTerminal::clear()
+{
+    buffer.clear();
+}
 
 

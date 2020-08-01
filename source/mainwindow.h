@@ -87,10 +87,16 @@ private:
     std::vector<double> time_received_delta_vector;
 
     double time_displayed_last,time_displayed_delta;
+    double _update_terminal_lasttime;                   // Terminal rate control: time of last terminal update
+    QTimer *_update_terminal_timer;                     // Terminal rate control: timer for delayed updated
+    unsigned _update_terminal_rate_period;              // Terminal rate contro: update rate period in milliseconds (higher value for lower update rate)
+
 
     // Scaling options
     double scaling_a,scaling_b;
     bool scaling_enabled;
+
+    //
 
     void Plot();
     void receivedData(vector<int> &linedata,std::vector<bool> &linedatanan);
@@ -122,6 +128,9 @@ private:
 
     void applyDisplaySettings();
     void applyFormatSettings();
+
+    void tryUpdateTerminal();       // Try to update terminal - terminal only updated if the rate control mechanism confirms update rate below limit
+    void doUpdateTerminal();        // Immediately update the terminal
 
 private slots:
     // Autoconnected signal/slot
@@ -167,6 +176,8 @@ private slots:
    void on_uicb_scaling_stateChanged(int arg1);
    void on_uile_scaling_a_textEdited(const QString &arg1);
    void on_uile_scaling_b_textEdited(const QString &arg1);
+
+   void onUpdateTerminalTimer();
 };
 
 #endif // __MAINWINDOW_H

@@ -143,6 +143,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
+    // Terminal rate control mechanism
+    _update_terminal_lasttime=0;
+    _update_terminal_timer = new QTimer(this);
+    _update_terminal_timer->setSingleShot(true);
+    connect(_update_terminal_timer, SIGNAL(timeout()),this,SLOT(onUpdateTerminalTimer()));
+    _update_terminal_rate_period = 100;
 
 
     /*QCoreApplication::setOrganizationName("danielroggen");
@@ -570,7 +576,39 @@ void MainWindow::applyFormatSettings()
 }
 
 
+void MainWindow::tryUpdateTerminal()
+{
+    // Try to update the terminal
+    double ct = PreciseTimer::QueryTimer();
+    double et = ct-_update_terminal_lasttime;
+    //printf("try update terminal: %lf %lf (%lf) %u\n",ct,_update_terminal_lasttime,et,_update_terminal_rate_period);
 
+    if(et<(double)_update_terminal_rate_period/1000.0)   // If terminal has been updated more recently than the rate period, then reschedule the timer to possibly wait for more data
+    {
+        //printf("schedule timer\n");
+        _update_terminal_timer->start(_update_terminal_rate_period);                            // Latency between the last data received, and the terminal updating
+    }
+    else
+    {
+        //printf("call do update timer\n");
+        // More than _update_terminal_rate_period since last update: update immediately
+        doUpdateTerminal();
+    }
+    //printf("End try update terminal\n");
+}
+void MainWindow::doUpdateTerminal()
+{
+    //printf("doUpdateTerminal\n");
+    // Immediately update the terminal and remember update time
+    QString str=terminal.getText();
+    ui->uiptTerminal->setPlainText(str);
+    //ui->uiptTerminal->setCenterOnScroll(true);
+    ui->uiptTerminal->verticalScrollBar()->setValue(ui->uiptTerminal->verticalScrollBar()->maximum());
+    //ui.textEdit->verticalScrollBar()->setValue(ui.textEdit->verticalScrollBar()->maximum());
+
+    // Store update time
+    _update_terminal_lasttime = PreciseTimer::QueryTimer();
+}
 void MainWindow::iodevread(QByteArray ba)
 {
     // When data is received we either direct it to the scopes, when the scopes or the config tabs are displayed, or to the terminal
@@ -578,11 +616,10 @@ void MainWindow::iodevread(QByteArray ba)
     {
         // Data to be displayed on terminal
         terminal.addBytes(ba);
-        QString str=terminal.getText();
-        ui->uiptTerminal->setPlainText(str);
-        //ui->uiptTerminal->setCenterOnScroll(true);
-        ui->uiptTerminal->verticalScrollBar()->setValue(ui->uiptTerminal->verticalScrollBar()->maximum());
-        //ui.textEdit->verticalScrollBar()->setValue(ui.textEdit->verticalScrollBar()->maximum());
+
+        tryUpdateTerminal();
+
+
     }
     else
     {
@@ -884,7 +921,7 @@ void MainWindow::on_actionAbout_triggered()
 {
    QMessageBox::about(this, "About",
    "<p><b>DScope</b> - QT Version</p>\n"
-   "<p>Version 1.13</p>"
+   "<p>Version 1.14</p>"
    "<p>(c) 2007-2020 Daniel Roggen</p>");
 
 }
@@ -1120,3 +1157,8 @@ void MainWindow::on_uile_scaling_b_textEdited(const QString &arg1)
     on_uicb_scaling_stateChanged(ui->uicb_scaling->checkState());
 }
 
+void MainWindow::onUpdateTerminalTimer()
+{
+    //printf("onUpdateTerminalTimer\n");
+    doUpdateTerminal();
+}
