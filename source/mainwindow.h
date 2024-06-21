@@ -178,6 +178,7 @@ private slots:
    void on_uile_scaling_b_textEdited(const QString &arg1);
 
    void onUpdateTerminalTimer();
+   void on_uipbClearTerm_clicked();
 };
 
 #endif // __MAINWINDOW_H

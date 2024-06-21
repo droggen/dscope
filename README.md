@@ -51,6 +51,8 @@ The Android version is available from Google Play.
 History
 -------
 
+v 1.15: Added a button to clear the terminal
+
 v 1.14: Added terminal display update rate limitation to handle streams coming at high rate
 
 v 1.13: Allow text to be selected / copied in the terminal view

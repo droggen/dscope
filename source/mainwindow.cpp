@@ -1162,3 +1162,10 @@ void MainWindow::onUpdateTerminalTimer()
     //printf("onUpdateTerminalTimer\n");
     doUpdateTerminal();
 }
+
+void MainWindow::on_uipbClearTerm_clicked()
+{
+    // Clear terminal
+    terminal.clear();
+    doUpdateTerminal();
+}
