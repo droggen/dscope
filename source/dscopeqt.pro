@@ -6,6 +6,8 @@
 QT += core gui
 QT += serialport network widgets
 QT += bluetooth
+# Compatibility for QRegExp of Qt5
+QT += core5compat
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android-source
 
