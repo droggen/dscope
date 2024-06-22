@@ -7,11 +7,12 @@ QT += core gui
 QT += serialport network widgets
 QT += bluetooth
 # Compatibility for QRegExp of Qt5
-QT += core5compat
+
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android-source
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += core5compat
 
 CONFIG += c++11
 
