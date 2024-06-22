@@ -99,15 +99,15 @@ private:
     //
 
     void Plot();
-    void receivedData(vector<int> &linedata,std::vector<bool> &linedatanan);
-    void receivedQuat(vector<float> &linedataf);
-    void treatNaN(vector<int> &linedata,std::vector<bool> &linedatanan);
+    void receivedData(std::vector<int> &linedata,std::vector<bool> &linedatanan);
+    void receivedQuat(std::vector<float> &linedataf);
+    void treatNaN(std::vector<int> &linedata,std::vector<bool> &linedatanan);
 
 
    // Trace storage
-   vector<vector<int> > alldata;
+   std::vector<std::vector<int> > alldata;
    ScopesDefinition sd;
-   vector<unsigned> handles;
+   std::vector<unsigned> handles;
 
    int scale(int data);
 

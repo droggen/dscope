@@ -132,7 +132,7 @@ bool IoDevice::open(ConnectionData cd)
             deviceBT = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol,this);
 
             // Initialise here
-            deviceBT->setPreferredSecurityFlags(QBluetooth::NoSecurity);
+            deviceBT->setPreferredSecurityFlags(QBluetooth::Security::NoSecurity);
             connect(deviceBT, SIGNAL(readyRead()), this, SLOT(BTGotData()));
             connect(deviceBT, SIGNAL(connected()), this, SLOT(BTConnected()));
             connect(deviceBT, SIGNAL(disconnected()), this, SLOT(BTDisconnected()));
@@ -151,7 +151,7 @@ bool IoDevice::open(ConnectionData cd)
             #ifdef Q_OS_ANDROID
                 deviceBT->connectToService(cd.ba,QBluetoothUuid(QString("00001101-0000-1000-8000-00805f9b34fb")));        // Works on android but not linux
             #else
-                deviceBT->connectToService(cd.ba,QBluetoothUuid::SerialPort);       // Works on linux, does not work on android
+                deviceBT->connectToService(cd.ba,QBluetoothUuid::ServiceClassUuid::SerialPort);       // Works on linux, does not work on android
             #endif
 #endif
 
@@ -195,12 +195,16 @@ bool IoDevice::close()
                 // No waitForDisconnected exists
             }
 #else
-            if( deviceBT->state() != QAbstractSocket::UnconnectedState )
+            //if( deviceBT->state() != QAbstractSocket::UnconnectedState )
+            if( deviceBT->state() != QBluetoothSocket::SocketState::UnconnectedState )
             {
                 deviceBT->disconnectFromService();
                 // No waitForDisconnected exists
             }
 #endif
+            break;
+        case DevNotConnected:
+            // Nothing to do
             break;
     }
     return true;
@@ -225,14 +229,18 @@ bool IoDevice::isConnected()
                 return true;
 #else
             printf("IoDevice: isConnected: bt state %s\n",BTStateToString(deviceBT->state()).toStdString().c_str());
-            if(deviceBT->state() == QAbstractSocket::ConnectedState)
+            //if(deviceBT->state() == QAbstractSocket::ConnectedState)
+            if(deviceBT->state() == QBluetoothSocket::SocketState::ConnectedState)
                 return true;
 #endif
             return false;
 
             //return deviceBT.isOpen();
             break;
-    }
+        case DevNotConnected:
+            // Nothing to do: will return false after switch.
+            break;
+        }
     return false;
 }
 
@@ -316,14 +324,14 @@ void IoDevice::BTDisconnected()
 void IoDevice::BTError(QBluetoothSocket::SocketError err)
 {
 
-    qDebug("IoDevice: Bluetooth error code: %d\n",err);
+    qDebug("IoDevice: Bluetooth error code: %d\n",(int)err);
 
 #if BTPOINTER==0
     QString se = BTStateToString(deviceBT.state());
     printf("IoDevice: BT: error: %d state: %d (%s). isOpen: %d\n",err,deviceBT.state(),se.toStdString().c_str(),deviceBT.isOpen());
 #else
     QString se = BTStateToString(deviceBT->state());
-    printf("IoDevice: BT: error: %d state: %d (%s). isOpen: %d\n",err,deviceBT->state(),se.toStdString().c_str(),deviceBT->isOpen());
+    printf("IoDevice: BT: error: %d state: %d (%s). isOpen: %d\n",(int)err,(int)deviceBT->state(),se.toStdString().c_str(),deviceBT->isOpen());
 #endif
 
 
@@ -337,24 +345,26 @@ void IoDevice::BTError(QBluetoothSocket::SocketError err)
 
     switch(err)
     {
-        case QAbstractSocket::SocketAddressNotAvailableError:
+        //case QAbstractSocket::SocketAddressNotAvailableError:
+        // Changed from QAbstractSocket::SocketAddressNotAvailableError in QT5 to QBluetoothSocket::SocketError::ServiceNotFoundError in QT6
+        case QBluetoothSocket::SocketError::ServiceNotFoundError:
             /*errstr = QString("Bluetooth error: connection failed");
             qDebug(errstr.toLatin1());
             emit error(errstr);*/
             //deviceBT.disconnectFromService();       // try
             emit connectionError();
             break;
-        case QAbstractSocket::NetworkError:
+        case QBluetoothSocket::SocketError::NetworkError:
             errstr = QString("Bluetooth error: connection lost");
             qDebug(errstr.toLatin1());
             emit error(errstr);
             break;
-        case QBluetoothSocket::UnknownSocketError:
+        case QBluetoothSocket::SocketError::UnknownSocketError:
             errstr = QString("Bluetooth error: unknown socket error");
             qDebug(errstr.toLatin1());
             emit error(errstr);
             break;
-        case QBluetoothSocket::RemoteHostClosedError:
+        case QBluetoothSocket::SocketError::RemoteHostClosedError:
             /*  If RemoteHostClosedError, the device still reports connected and open and no disconnect signal
                 is sent.
                 Explicitly disconnect from service. This triggers a disconnect signal.
@@ -371,12 +381,12 @@ void IoDevice::BTError(QBluetoothSocket::SocketError err)
 #else
             deviceBT->disconnectFromService();
             se = BTStateToString(deviceBT->state());
-            printf("after disconnect from service: deviceBT state: %d (%s). isOpen: %d\n",deviceBT->state(),se.toStdString().c_str(),deviceBT->isOpen());
+            printf("after disconnect from service: deviceBT state: %d (%s). isOpen: %d\n",(int)deviceBT->state(),se.toStdString().c_str(),deviceBT->isOpen());
 #endif
 
             break;
         default:
-            errstr = QString("Bluetooth error code ")+QString::number(err);
+            errstr = QString("Bluetooth error code ")+QString::number((int)err);
             qDebug(errstr.toLatin1());
             emit error(errstr);
             break;
@@ -500,7 +510,8 @@ bool IoDevice::ParseConnection(QString str, ConnectionData &conn)
         }
 
         QString MAC;
-        MAC.sprintf("%02X:%02X:%02X:%02X:%02X:%02X",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
+        //MAC.sprintf("%02X:%02X:%02X:%02X:%02X:%02X",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
+        MAC.asprintf("%02X:%02X:%02X:%02X:%02X:%02X",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
         printf("mac: %s\n",MAC.toStdString().c_str());
         conn.type = DevBTConnection;
         conn.ba = QBluetoothAddress(MAC);

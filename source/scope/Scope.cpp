@@ -362,16 +362,16 @@ void Scope::vrange2vpp(int vmin,int vmax,int &vpp,int &vpp_s)
 	if(vpp==1)
 		vpp_s=1;
 }
-void Scope::Plot(vector<int> &data,unsigned color)
+void Scope::Plot(std::vector<int> &data,unsigned color)
 {	
-	vector<vector<int> *> v;
+    std::vector<std::vector<int> *> v;
 	v.push_back(&data);
-	vector<unsigned> vc;
+    std::vector<unsigned> vc;
 	vc.push_back(color);
 	Plot(v,vc);
 }
 
-void Scope::Plot(const vector<vector<int> *> &vv,const vector<unsigned> &color)
+void Scope::Plot(const std::vector<std::vector<int> *> &vv,const std::vector<unsigned> &color)
 {
 	cleararea();
 	
@@ -439,7 +439,7 @@ void Scope::Plot(const vector<vector<int> *> &vv,const vector<unsigned> &color)
 	{
 		unsigned fcolor = fastColor(color[ni]);
 		int lastx,lasty;
-		const vector<int> &v = *vv[ni];
+        const std::vector<int> &v = *vv[ni];
 		for(int s=0;s<nsonscreen;s++)
 		{
 			int value = v[np-1-s];
@@ -609,7 +609,7 @@ void Scope::DrawVGrid(unsigned fcolor_axis,unsigned fcolor_minor,unsigned fcolor
 }
 
 
-void Scope::SetTitle(const string &t)
+void Scope::SetTitle(const std::string &t)
 {
 	title=t;
 }

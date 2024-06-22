@@ -99,7 +99,6 @@ History:
 
 
 
-using namespace std;
 
 void itoa(int val, char *str);
 
@@ -117,7 +116,7 @@ class Scope
 		int vpp_m,vpp_m_i;
 		int vmin,vmax;
 		bool highlight;
-		string title;
+        std::string title;
 		
 		virtual unsigned ColorBlack()=0;
 		virtual unsigned ColorWhite()=0;
@@ -178,13 +177,13 @@ class Scope
 		virtual void SetVRange(int min,int max);
 		virtual void VZoomin();
 		virtual void VZoomout();
-		virtual void Plot(vector<int> &v,unsigned color=0xffffff);
-		virtual void Plot(const vector<vector<int> *> &v,const vector<unsigned> &color);
+        virtual void Plot(std::vector<int> &v,unsigned color=0xffffff);
+        virtual void Plot(const std::vector<std::vector<int> *> &v,const std::vector<unsigned> &color);
 		
 		virtual void Highlight();
 		virtual void NoHighlight();
 		
-		virtual void SetTitle(const string &t);
+        virtual void SetTitle(const std::string &t);
 		
 		
 };

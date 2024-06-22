@@ -40,7 +40,7 @@ template<class T> bool SplitInVector(std::string str,std::string split,std::vect
 
    r.clear();
    QString qstr(str.c_str());
-   QStringList sl = qstr.split(QString(split.c_str()),QString::SkipEmptyParts);
+   QStringList sl = qstr.split(QString(split.c_str()),Qt::SkipEmptyParts);
    for(int i=0;i<sl.size();i++)
    {
       std::istringstream iss(sl[i].toStdString());

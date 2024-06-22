@@ -69,7 +69,6 @@ History:
 
 
 
-using namespace std;
 
 class Scopes {
 	
@@ -84,8 +83,8 @@ class Scopes {
 
 		typedef struct {unsigned x,y,w,h; Scope* scope;} scopeholder;
 		
-		map<unsigned,scopeholder> scopes;	// Get the scopeholder from the handle: scopeholder = scopes[handle]
-		vector<unsigned> handles;			// Table to map ID of scope to handle of scope: handle = handles[ID]
+        std::map<unsigned,scopeholder> scopes;	// Get the scopeholder from the handle: scopeholder = scopes[handle]
+        std::vector<unsigned> handles;			// Table to map ID of scope to handle of scope: handle = handles[ID]
 		
 		unsigned w,h;
 		unsigned nx,ny;
@@ -119,7 +118,7 @@ class Scopes {
 		virtual void Render()=0;
 		
 		virtual unsigned AddScope();
-		virtual vector<unsigned> AddScopes(unsigned n);
+        virtual std::vector<unsigned> AddScopes(unsigned n);
 		virtual void RemoveScope(unsigned handle);
 		
 		virtual Scope* operator[](unsigned handle);

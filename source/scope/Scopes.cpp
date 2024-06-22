@@ -71,7 +71,7 @@ unsigned Scopes::_AddScope()
 }
 unsigned Scopes::GetID(unsigned handle)
 {
-	vector<unsigned>::iterator it = find(handles.begin(),handles.end(),handle);
+    std::vector<unsigned>::iterator it = find(handles.begin(),handles.end(),handle);
 	return it-handles.begin();
 }
 
@@ -98,7 +98,7 @@ void Scopes::DeleteScope(unsigned handle)
 		scopes[handle].scope=0;
 	}
 	scopes.erase(handle);
-	vector<unsigned>::iterator it;
+    std::vector<unsigned>::iterator it;
 	for(it = handles.begin();it!=handles.end();it++)
 	{
 		if(*it==handle)
@@ -196,9 +196,9 @@ unsigned Scopes::AddScope()
 	return h;
 }
 
-vector<unsigned> Scopes::AddScopes(unsigned n)
+std::vector<unsigned> Scopes::AddScopes(unsigned n)
 {
-	vector<unsigned> hs;
+    std::vector<unsigned> hs;
 	
 	for(unsigned i=0;i<n;i++)
 		hs.push_back(_AddScope());

@@ -46,8 +46,8 @@ public:
 	 
 	 
 
-	virtual void Plot(vector<int> &v,unsigned color=0xffffff);
-	virtual void Plot(const vector<vector<int> *> &v,const vector<unsigned> &color);
+    virtual void Plot(std::vector<int> &v,unsigned color=0xffffff);
+    virtual void Plot(const std::vector<std::vector<int> *> &v,const std::vector<unsigned> &color);
 	//virtual void Resize(QPixmap *_pixmap,unsigned _x,unsigned _y,unsigned _w,unsigned _h);
 	//virtual void Resize(QPaintDevice *_pixmap,unsigned _x,unsigned _y,unsigned _w,unsigned _h);
 	virtual void Resize(QImage *_pixmap,unsigned _x,unsigned _y,unsigned _w,unsigned _h);

@@ -71,8 +71,7 @@ BtWindow::~BtWindow()
 
 void BtWindow::deviceDiscovered(QBluetoothDeviceInfo di)
 {
-    qDebug("discovered something\n");
-    qDebug("address: %s\n",di.address().toString().toStdString().c_str());
+    qDebug("Discovered, address: %s\n",di.address().toString().toStdString().c_str());
 
     bdi.push_back(di);
     populateTable();
@@ -152,16 +151,19 @@ void BtWindow::populateTable()
         ui->uitwPorts->setItem(i,5, newItem);
 
 
-        QBluetoothDeviceInfo::DataCompleteness c = bdi.at(i).serviceUuidsCompleteness();
+
         QList<QBluetoothUuid> siid = bdi.at(i).serviceUuids();
         QString siidstr="";
-        printf("number of service uuid %d\n",siid.size());
+        printf("number of service uuid %lld\n",siid.size());
         for(int j=0;j<siid.size();j++)
         {
             // TODO: use toUInt128 when QString::number will support quint128
             siidstr+=QString::number(siid.at(j).toUInt32());
             siidstr+=";";
         }
+#if 0
+// QT5 had serviceUuidsCompleteness() which does not exist anymore.
+        QBluetoothDeviceInfo::DataCompleteness c = bdi.at(i).serviceUuidsCompleteness();
         if(c==QBluetoothDeviceInfo::DataIncomplete)
         {
             if(siidstr=="")
@@ -171,7 +173,7 @@ void BtWindow::populateTable()
         }
         if(c==QBluetoothDeviceInfo::DataUnavailable)
             siidstr+="N/A";
-
+#endif
 
         newItem = new QTableWidgetItem(siidstr);
         //newItem->setFlags(Qt::NoItemFlags);
@@ -195,6 +197,7 @@ void BtWindow::deviceFinished()
 }
 void BtWindow::on_uitwPorts_cellDoubleClicked(int row, int column)
 {
+    (void)column;
     printf("cell double clicked\n");
     // Get the leftmost column which is the name
     printf("%s\n",ui->uitwPorts->item(row,0)->text().toStdString().c_str());

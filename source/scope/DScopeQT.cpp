@@ -71,12 +71,12 @@ void DScopeQT::SetAlpha(bool _alpha)
 }
 
 
-void DScopeQT::Plot(vector<int> &v,unsigned color)
+void DScopeQT::Plot(std::vector<int> &v,unsigned color)
 {
 	Scope::Plot(v,color);
 
 }
-void DScopeQT::Plot(const vector<vector<int> *> &v,const vector<unsigned> &color)
+void DScopeQT::Plot(const std::vector<std::vector<int> *> &v,const std::vector<unsigned> &color)
 {
 	painter.begin(paintdevice);	
 	Scope::Plot(v,color);

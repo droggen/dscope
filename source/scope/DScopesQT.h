@@ -43,7 +43,7 @@ class DScopesQT : public Scopes
 {
 	protected:
 		QImage *surface;
-		map<unsigned,QImage*> surfaces;
+        std::map<unsigned,QImage*> surfaces;
 		bool alpha;
 
 		QPainter painter;

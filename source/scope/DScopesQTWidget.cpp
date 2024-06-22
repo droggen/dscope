@@ -146,7 +146,7 @@ void DScopesQTWidget::mousePressEvent ( QMouseEvent * event )
                 break;
             IPoint(mousex-basex,mousey-basey);
             break;
-        case Qt::MidButton:
+        case Qt::MiddleButton:
             switch(event->modifiers())
             {
                 case Qt::NoModifier:
@@ -171,7 +171,7 @@ void DScopesQTWidget::mousePressEvent ( QMouseEvent * event )
 }
 void DScopesQTWidget::wheelEvent (QWheelEvent * event)
 {
-    if(event->delta()>0)
+    if(event->angleDelta().y()>0)
     {
         if(event->modifiers()==Qt::NoModifier)
             IVZoomIn();

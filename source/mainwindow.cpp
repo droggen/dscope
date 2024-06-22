@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <QFileDialog>
 #include <QScreen>
 #include <QScrollBar>
+#include <QRegExp>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -55,7 +56,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 MainWindow::MainWindow(QWidget *parent) :
    QMainWindow(parent),
    ui(new Ui::MainWindow),
-   fp(string("")),
+   fp(std::string("")),
    terminal(100)
 {
    ui->setupUi(this);
@@ -101,8 +102,15 @@ MainWindow::MainWindow(QWidget *parent) :
     // Set validators for the scaling option
     //ui->uile_scaling_a->setValidator(new QDoubleValidator(0, 100, 2, this))
     //ui->uile_scaling_a->setValidator(new QRegExpValidator(QRegExp("[0-9]*"), this);
+#if 0
+    // Qt5
     ui->uile_scaling_a->setValidator(new QRegExpValidator(QRegExp("[0123456789.-]*"), this));
     ui->uile_scaling_b->setValidator(new QRegExpValidator(QRegExp("[0123456789.-]*"), this));
+#else
+    // Qt6
+    ui->uile_scaling_a->setValidator(new QRegularExpressionValidator(QRegularExpression("[0123456789.-]*"), this));
+    ui->uile_scaling_b->setValidator(new QRegularExpressionValidator(QRegularExpression("[0123456789.-]*"), this));
+#endif
 
 
     // Connect the device
@@ -238,7 +246,7 @@ void MainWindow::SaveData()
          {
             for(unsigned j=0;j<alldata.size();j++)
                out << alldata[j][i] << " ";
-            out << endl;
+            out << Qt::endl;
          }
         file.close();
       }
@@ -252,7 +260,7 @@ void MainWindow::SaveData()
 
 void MainWindow::Plot()
 {
-   double t1,t2;
+   //double t1,t2;
    //t1=PreciseTimer::QueryTimer();
    // Plot scopes
    if(sd.scopedefinition.size()==0)
@@ -266,8 +274,8 @@ void MainWindow::Plot()
       for(unsigned s=0;s<sd.scopedefinition.size();s++)
       {
          // Iterate all traces of the scope
-         vector<vector<int> *> vd;		// data for the traces in this scope
-         vector<unsigned> vc;			// colors  of the traces
+         std::vector<std::vector<int> *> vd;		// data for the traces in this scope
+         std::vector<unsigned> vc;			// colors  of the traces
          for(unsigned t=0;t<sd.scopedefinition[s].traces.size();t++)
          {
             // If trace available
@@ -295,7 +303,8 @@ void MainWindow::timerEvent(QTimerEvent *event)
    time_displayed_delta = f*time_displayed_delta + (1.0-f)*(t-time_displayed_last);
    time_displayed_last=t;
    QString s;
-   s.sprintf("Display rate: %3.0lf Hz",1.0/time_displayed_delta);
+   //s.sprintf("Display rate: %3.0lf Hz",1.0/time_displayed_delta);
+   s.asprintf("Display rate: %3.0lf Hz",1.0/time_displayed_delta);
    displayrateLabel->setText(s);
 
    Plot();
@@ -358,14 +367,14 @@ void MainWindow::AddScopes(unsigned n)
 /**
   \brief Do something with NaNs - typically set a constant value in the data buffer for display purposes
 **/
-void MainWindow::treatNaN(vector<int> &linedata,std::vector<bool> &linedatanan)
+void MainWindow::treatNaN(std::vector<int> &linedata,std::vector<bool> &linedatanan)
 {
    for(unsigned i=0;i<linedata.size();i++)
       if(linedatanan[i])
          linedata[i]=nanvalue;
 }
 
-void MainWindow::receivedData(vector<int> &linedata,std::vector<bool> &linedatanan)
+void MainWindow::receivedData(std::vector<int> &linedata,std::vector<bool> &linedatanan)
 {
    // Handle the NaN
    treatNaN(linedata,linedatanan);
@@ -389,7 +398,8 @@ void MainWindow::receivedData(vector<int> &linedata,std::vector<bool> &linedatan
 
       QString s;
       //s.sprintf("Data rate: %3.1lf Hz  %3.1lf Hz",1.0/time_received_delta,1.0/tt);
-      s.sprintf("Data rate: %3.0lf Hz",1.0/tt);
+      //s.sprintf("Data rate: %3.0lf Hz",1.0/tt);
+      s.asprintf("Data rate: %3.0lf Hz",1.0/tt);
       //s.sprintf("Data rate: %3.0lf Hz",1.0/time_received_delta);
       datarateLabel->setText(s);
 
@@ -421,7 +431,7 @@ void MainWindow::receivedData(vector<int> &linedata,std::vector<bool> &linedatan
       {
          for(unsigned i=0;i<newsize-oldsize;i++)
             //alldata.push_back(vector<int> (buffersize,0));
-            alldata.push_back(vector<int> (buffersize,nanvalue));
+            alldata.push_back(std::vector<int> (buffersize,nanvalue));
       }
       // Adjust scope number
       if(sd.scopedefinition.size()==0)
@@ -544,7 +554,7 @@ void MainWindow::applyDisplaySettings()
             dscopes->operator[](handles[i])->SetVRange(sd.scopedefinition[i].yscale[0],sd.scopedefinition[i].yscale[1]);
          dscopes->operator[](handles[i])->HZoom(sd.scopedefinition[i].xscale);
       }
-      vector<int> v(1,0);
+      std::vector<int> v(1,0);
       for(unsigned i=0;i<sd.scopedefinition.size();i++)
          dscopes->operator[](handles[i])->Plot(v);
    }
@@ -561,7 +571,7 @@ void MainWindow::applyFormatSettings()
    // DX3 reader: DX3;cc-s-s-s-s-s-s
 
    // Test the binary string.
-   string binaryformat = ui->uileBinaryFormat->text().trimmed().toStdString();
+   std::string binaryformat = ui->uileBinaryFormat->text().trimmed().toStdString();
    if(binaryformat.size()==0)
    {
       binary=false;
@@ -721,11 +731,11 @@ void MainWindow::TextChunckDecodeRead(const QByteArray& in)
       // Generate synthetic string
       //qstr =QString("   3      10 \t 1213 , -31239 ; NaN 3891 NaN NaN 12902 3.1415 -2.7 10.00");
 
-      QRegExp rx(QString("[ ;,\t]"));                             // Match any separator
-      QStringList sl = qstr.split(rx,QString::SkipEmptyParts);		// Split on separator, skip empty parts. We don't want multiple spaces or tabs to be interpreted as multiple strings
-      vector<int> linedata(sl.size());
-        vector<float> linedataf(sl.size());
-      vector<bool> linedatanan(sl.size());
+      QRegularExpression rx(QString("[ ;,\t]"));                             // Match any separator
+      QStringList sl = qstr.split(rx,Qt::SkipEmptyParts);		// Split on separator, skip empty parts. We don't want multiple spaces or tabs to be interpreted as multiple strings
+      std::vector<int> linedata(sl.size());
+      std::vector<float> linedataf(sl.size());
+      std::vector<bool> linedatanan(sl.size());
       for(int i=0;i<sl.size();i++)			// Convert string list to int vector
       {
          // Check for NaN
@@ -774,7 +784,7 @@ void MainWindow::TextChunckDecodeRead(const QByteArray& in)
 }
 void MainWindow::BinaryChunckDecodeRead(QByteArray &ba)
 {
-   vector<vector<int> > v = fp.Parser(ba.data(),ba.size());
+   std::vector<std::vector<int> > v = fp.Parser(ba.data(),ba.size());
    if(v.size())
    {
       for(int i=0;i<v.size();i++)

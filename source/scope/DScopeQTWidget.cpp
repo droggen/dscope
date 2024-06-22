@@ -66,7 +66,7 @@ void DScopeQTWidget::mousePressEvent ( QMouseEvent * event )
 {
     switch(event->button())
     {
-        case Qt::MidButton:
+        case Qt::MiddleButton:
             switch(event->modifiers())
             {
                 case Qt::NoModifier:
@@ -88,7 +88,7 @@ void DScopeQTWidget::mousePressEvent ( QMouseEvent * event )
 }
 void DScopeQTWidget::wheelEvent (QWheelEvent * event)
 {
-    if(event->delta()>0)
+    if(event->angleDelta().y()>0)
     {
         if(event->modifiers()==Qt::NoModifier)
             VZoomin();
