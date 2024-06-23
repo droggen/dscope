@@ -12,7 +12,7 @@ QT += bluetooth
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android-source
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-greaterThan(QT_MAJOR_VERSION, 5): QT += core5compat
+#greaterThan(QT_MAJOR_VERSION, 5): QT += core5compat
 
 CONFIG += c++11
 
@@ -94,7 +94,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #   android-source/gradle/wrapper/gradle-wrapper.properties \
 #   android-source/gradlew.bat
 
-DISTFILES += \
-   android-source/AndroidManifest.xml \
-   android-source/res/values/libs.xml
+#DISTFILES += \
+#   android-source/AndroidManifest.xml \
+#   android-source/res/values/libs.xml
 
+# In Qt6: QT_ANDROID_MIN_SDK_VERSION = 28
+# In Qt6: QT_ANDROID_TARGET_SDK_VERSION = 28
