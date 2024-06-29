@@ -4,15 +4,11 @@
 
 
 QT += core gui
-QT += serialport network widgets
+QT += serialport network
 QT += bluetooth
-# Compatibility for QRegExp of Qt5
-
-
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android-source
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-#greaterThan(QT_MAJOR_VERSION, 5): QT += core5compat
+greaterThan(QT_MAJOR_VERSION, 5): QT += core5compat
 
 CONFIG += c++11
 
@@ -70,6 +66,11 @@ OTHER_FILES += howto.html \
     dscope.rc
 RESOURCES += resources.qrc
 
+contains(ANDROID_TARGET_ARCH,arm64-v8a) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android-source
+}
+
 
 # icon
 win32: RC_FILE = dscope.rc
@@ -96,7 +97,16 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 #DISTFILES += \
 #   android-source/AndroidManifest.xml \
+#   android-source/build.gradle
 #   android-source/res/values/libs.xml
 
-# In Qt6: QT_ANDROID_MIN_SDK_VERSION = 28
-# In Qt6: QT_ANDROID_TARGET_SDK_VERSION = 28
+
+ANDROID_VERSION_NAME=1.15
+ANDROID_VERSION_CODE=9
+
+
+ANDROID_MIN_SDK_VERSION = "23"
+ANDROID_TARGET_SDK_VERSION = "34"
+
+
+

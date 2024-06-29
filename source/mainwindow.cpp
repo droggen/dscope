@@ -931,8 +931,8 @@ void MainWindow::on_actionAbout_triggered()
 {
    QMessageBox::about(this, "About",
    "<p><b>DScope</b> - QT Version</p>\n"
-   "<p>Version 1.14</p>"
-   "<p>(c) 2007-2020 Daniel Roggen</p>");
+   "<p>Version 1.15</p>"
+   "<p>(c) 2007-2024 Daniel Roggen</p>");
 
 }
 void MainWindow::on_actionListSerialPorts_triggered()
