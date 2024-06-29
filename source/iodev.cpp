@@ -50,7 +50,7 @@ IoDevice::IoDevice(QObject *parent) :
     connect(&deviceBT, SIGNAL(readyRead()), this, SLOT(BTGotData()));
     connect(&deviceBT, SIGNAL(connected()), this, SLOT(BTConnected()));
     connect(&deviceBT, SIGNAL(disconnected()), this, SLOT(BTDisconnected()));
-    connect(&deviceBT, SIGNAL(error(QBluetoothSocket::SocketError)), this, SLOT(BTError(QBluetoothSocket::SocketError)));
+    connect(&deviceBT, SIGNAL(errorOccurred(QBluetoothSocket::SocketError)), this, SLOT(BTError(QBluetoothSocket::SocketError)));
 #else
     deviceBT=0;
 #endif
@@ -63,7 +63,7 @@ IoDevice::IoDevice(QObject *parent) :
     connect(&deviceTCP, SIGNAL(readyRead()), this, SLOT(TCPGotData()));
     connect(&deviceTCP, SIGNAL(connected()), this, SLOT(TCPConnected()));
     connect(&deviceTCP, SIGNAL(disconnected()), this, SLOT(TCPDisconnected()));
-    connect(&deviceTCP, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(TCPErr(QAbstractSocket::SocketError)));
+    connect(&deviceTCP, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(TCPErr(QAbstractSocket::SocketError)));
 }
 
 /************************************
@@ -136,7 +136,7 @@ bool IoDevice::open(ConnectionData cd)
             connect(deviceBT, SIGNAL(readyRead()), this, SLOT(BTGotData()));
             connect(deviceBT, SIGNAL(connected()), this, SLOT(BTConnected()));
             connect(deviceBT, SIGNAL(disconnected()), this, SLOT(BTDisconnected()));
-            connect(deviceBT, SIGNAL(error(QBluetoothSocket::SocketError)), this, SLOT(BTError(QBluetoothSocket::SocketError)));
+            connect(deviceBT, SIGNAL(errorOccurred(QBluetoothSocket::SocketError)), this, SLOT(BTError(QBluetoothSocket::SocketError)));
 #endif
 
 #if BTPOINTER==0
