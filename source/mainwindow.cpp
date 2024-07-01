@@ -61,6 +61,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
    ui->setupUi(this);
 
+#ifdef Q_OS_ANDROID
+   // Hack around dark theme.
+    setStyleSheet("background-color:darkgrey;");
+    setAutoFillBackground( true );
+#endif
+
 #ifdef DEVELMODE
     ConsoleInit();
    printf("Starting up\n");
@@ -146,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
     statusBar()->addWidget(datarateLabel);
     displayrateLabel=new QLabel(statusBar());
     statusBar()->addWidget(displayrateLabel);
+
 
     time_received_delta_vector.resize(100,0.0);
 
@@ -304,7 +311,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
    time_displayed_last=t;
    QString s;
    //s.sprintf("Display rate: %3.0lf Hz",1.0/time_displayed_delta);
-   s.asprintf("Display rate: %3.0lf Hz",1.0/time_displayed_delta);
+   s = QString::asprintf("Display rate: %3.0lf Hz",1.0/time_displayed_delta);
    displayrateLabel->setText(s);
 
    Plot();
@@ -397,11 +404,9 @@ void MainWindow::receivedData(std::vector<int> &linedata,std::vector<bool> &line
       tt/=(double)time_received_delta_vector.size();
 
       QString s;
-      //s.sprintf("Data rate: %3.1lf Hz  %3.1lf Hz",1.0/time_received_delta,1.0/tt);
-      //s.sprintf("Data rate: %3.0lf Hz",1.0/tt);
-      s.asprintf("Data rate: %3.0lf Hz",1.0/tt);
-      //s.sprintf("Data rate: %3.0lf Hz",1.0/time_received_delta);
+      s = QString::asprintf("Data rate: %3.0lf Hz",1.0/tt);
       datarateLabel->setText(s);
+      qDebug(s.toStdString().c_str());
 
 
       time_received_last=t;
