@@ -40,6 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "helpwindow.h"
 #include "iodev.h"
 #include "parse.h"
+#include "dsettings.h"
 
 #include <QtSerialPort/QSerialPort>
 #include "dterminal.h"
@@ -59,12 +60,12 @@ MainWindow::MainWindow(QWidget *parent) :
    fp(std::string("")),
    terminal(100)
 {
-   ui->setupUi(this);
+    ui->setupUi(this);
 
 #ifdef Q_OS_ANDROID
-   // Hack around dark theme.
-    setStyleSheet("background-color:darkgrey;");
-    setAutoFillBackground( true );
+    // Hack around dark theme.
+    //setStyleSheet("background-color:darkgrey;");
+    //setAutoFillBackground( true );
 #endif
 
 #ifdef DEVELMODE
@@ -73,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
 
-   timer=0;
+    timer=0;
 
     totreceiveddata=0;
 
@@ -902,12 +903,23 @@ Returns 0 in case of success
 ******************************************************************************/
 bool MainWindow::saveSettings(QString ini)
 {
-    QSettings *settings;
+    /*
+        Android issue with QSettings and file URI. Using DSettings instead when aiming to store in a file.
+    */
+
+    //QSettings *settings;
+    DSettings *settings;
 
     if(ini==QString())
-        settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,"danielroggen","dscopeqt");
+    {
+        //settings=new QSettings(QSettings::IniFormat,QSettings::UserScope,"danielroggen","dscopeqt");
+        settings=new DSettings(QSettings::IniFormat,QSettings::UserScope,"danielroggen","dscopeqt");
+    }
     else
-        settings=new QSettings(ini,QSettings::IniFormat);
+    {
+        //settings=new QSettings(ini,QSettings::IniFormat);
+        settings=new DSettings(ini,QSettings::IniFormat);
+    }
 
     if(settings->status()!=QSettings::NoError)
         return true;

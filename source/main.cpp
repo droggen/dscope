@@ -21,10 +21,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <QApplication>
 #include "mainwindow.h"
+#include <QStyleFactory>
 
 int main(int argc, char *argv[])
 {
+
+
     qputenv("QT_USE_ANDROID_NATIVE_STYLE", "0");
+
+    QStringList style = QStyleFactory::keys();
+    for(int i=0;i<style.size();i++)
+    {
+        qDebug("Style: %s\n",style[i].toStdString().c_str());
+    }
+
+    //QApplication::setStyle(QStyleFactory::create("android"));       // Crash on android
+    //QApplication::setStyle(QStyleFactory::create("windowsVista"));
+    //QApplication::setStyle(QStyleFactory::create("Windows"));
+    //QApplication::setStyle(QStyleFactory::create("Fusion"));
+    //QApplication::setStyle(QStyleFactory::create("Material"));
 
     QApplication a(argc, argv);
     MainWindow w;

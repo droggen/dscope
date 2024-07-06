@@ -17,6 +17,7 @@ INCLUDEPATH += .
 TARGET = DScopeQT
 TEMPLATE = app
 SOURCES += main.cpp \
+    dsettings.cpp \
     precisetimer.cpp \
     cio.cpp \
     FrameParser/FrameParser3.cpp \
@@ -37,6 +38,7 @@ SOURCES += main.cpp \
     btwindow.cpp \
     dterminal.cpp
 HEADERS += \
+    dsettings.h \
     precisetimer.h \
     cio.h \
     FrameParser/FrameParser3.h \
@@ -95,14 +97,14 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #   android-source/gradle/wrapper/gradle-wrapper.properties \
 #   android-source/gradlew.bat
 
-#DISTFILES += \
-#   android-source/AndroidManifest.xml \
-#   android-source/build.gradle
-#   android-source/res/values/libs.xml
+DISTFILES += \
+   android-source/AndroidManifest.xml \
+   android-source/build.gradle
+   android-source/res/values/libs.xml
 
 
 ANDROID_VERSION_NAME=1.15
-ANDROID_VERSION_CODE=9
+ANDROID_VERSION_CODE=11
 
 
 ANDROID_MIN_SDK_VERSION = "23"
