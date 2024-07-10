@@ -42,6 +42,12 @@ int main(int argc, char *argv[])
     //QApplication::setStyle(QStyleFactory::create("Material"));
 
     QApplication a(argc, argv);
+
+#ifdef Q_OS_ANDROID
+    // Helps increase size
+    a.setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::Ceil);
+#endif
+
     MainWindow w;
     w.show();
     return a.exec();
