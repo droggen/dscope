@@ -51,6 +51,8 @@ The Android version is available from Google Play.
 History
 -------
 
+v 1.16: Added a button to add a template display format string for convenience
+
 v 1.15: Added a button to clear the terminal
 
 v 1.14: Added terminal display update rate limitation to handle streams coming at high rate

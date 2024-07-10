@@ -179,6 +179,7 @@ private slots:
 
    void onUpdateTerminalTimer();
    void on_uipbClearTerm_clicked();
+   void on_uipbAddScopeSettingBasic_clicked();
 };
 
 #endif // __MAINWINDOW_H

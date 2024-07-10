@@ -948,7 +948,7 @@ void MainWindow::on_actionAbout_triggered()
 {
    QMessageBox::about(this, "About",
    "<p><b>DScope</b> - QT Version</p>\n"
-   "<p>Version 1.15</p>"
+   "<p>Version 1.16</p>"
    "<p>(c) 2007-2024 Daniel Roggen</p>");
 
 }
@@ -1196,3 +1196,24 @@ void MainWindow::on_uipbClearTerm_clicked()
     terminal.clear();
     doUpdateTerminal();
 }
+
+void MainWindow::on_uipbAddScopeSettingBasic_clicked()
+{
+    // Add template scope setting
+    QString str("<Title; 0 1;xscale=1; yscale=-10000 10000; color=ff0000 00ff00>\n");
+    QString orig = ui->uiteDisplayFormat->toPlainText();
+
+    // If original is empty or ends with newline, add without newline
+    if(orig.length()==0)
+        ui->uiteDisplayFormat->setPlainText(str);
+    else
+    {
+        if(orig.endsWith("\n"))
+            ui->uiteDisplayFormat->setPlainText(orig+str);
+        else
+            ui->uiteDisplayFormat->setPlainText(orig+QString("\n")+str);
+     }
+
+    applyDisplaySettings();
+}
+
